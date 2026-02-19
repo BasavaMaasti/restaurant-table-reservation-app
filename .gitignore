@@ -1,0 +1,99 @@
+# ─── Node.js ───────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ─── Environment Variables ─────────────────────────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# ─── Logs ──────────────────────────────────────────────────
+logs/
+*.log
+combined.log
+error.log
+
+# ─── Angular Build Output ──────────────────────────────────
+frontend/dist/
+frontend/.angular/
+frontend/.angular/cache/
+
+# ─── Angular Cache ─────────────────────────────────────────
+.angular/
+.cache/
+
+# ─── TypeScript Compiled Output ────────────────────────────
+frontend/out-tsc/
+*.js.map
+*.d.ts.map
+
+# ─── OS Files ──────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ─── IDE & Editor ──────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ─── MongoDB ───────────────────────────────────────────────
+data/
+*.mongodb
+
+# ─── Docker ────────────────────────────────────────────────
+docker-compose.override.yml
+.docker/
+
+# ─── Testing & Coverage ────────────────────────────────────
+coverage/
+.nyc_output/
+*.spec.js
+karma.conf.js.bak
+
+# ─── Uploads & Media ───────────────────────────────────────
+backend/uploads/
+public/uploads/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+
+# ─── Build & Temp ──────────────────────────────────────────
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+
+# ─── SSL / Certificates ────────────────────────────────────
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+
+# ─── PM2 ───────────────────────────────────────────────────
+.pm2/
+ecosystem.config.js
+
+# ─── Misc ──────────────────────────────────────────────────
+.sass-cache/
+.connect.lock
