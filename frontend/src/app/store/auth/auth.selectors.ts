@@ -10,3 +10,4 @@ export const selectAuthError = createSelector(selectAuthState, (s) => s.error);
 export const selectAccessToken = createSelector(selectAuthState, (s) => s.accessToken);
 export const selectUserRole = createSelector(selectAuthState, (s) => s.user?.role);
 export const selectIsAdmin = createSelector(selectUserRole, (role) => role === 'admin' || role === 'super_admin');
+export const selectIsSuperAdmin = createSelector(selectUserRole, (role) => role === 'super_admin');

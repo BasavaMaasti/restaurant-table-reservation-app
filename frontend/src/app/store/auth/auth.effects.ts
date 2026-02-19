@@ -19,7 +19,7 @@ export class AuthEffects {
       ofType(AuthActions.login),
       exhaustMap(({ email, password }) =>
         this.authService.login(email, password).pipe(
-          map(({ user, accessToken }) => AuthActions.loginSuccess({ user, accessToken })),
+          map((res) => AuthActions.loginSuccess({ user: res.data.user, accessToken: res.accessToken })),
           catchError((err) => of(AuthActions.loginFailure({ error: err.error?.message || 'Login failed' }))),
         ),
       ),
@@ -42,7 +42,7 @@ export class AuthEffects {
       ofType(AuthActions.register),
       exhaustMap(({ name, email, password, phone }) =>
         this.authService.register({ name, email, password, phone }).pipe(
-          map(({ user, accessToken }) => AuthActions.registerSuccess({ user, accessToken })),
+          map((res) => AuthActions.registerSuccess({ user: res.data.user, accessToken: res.accessToken })),
           catchError((err) => of(AuthActions.registerFailure({ error: err.error?.message || 'Registration failed' }))),
         ),
       ),
@@ -88,7 +88,7 @@ export class AuthEffects {
       ofType(AuthActions.loadCurrentUser),
       switchMap(() =>
         this.authService.getMe().pipe(
-          map((user) => AuthActions.loadCurrentUserSuccess({ user })),
+          map((res: any) => AuthActions.loadCurrentUserSuccess({ user: res.data.user })),
           catchError(() => of(AuthActions.loadCurrentUserFailure())),
         ),
       ),
@@ -100,7 +100,7 @@ export class AuthEffects {
       ofType(AuthActions.updateProfile),
       exhaustMap(({ data }) =>
         this.authService.updateMe(data).pipe(
-          map((user) => AuthActions.updateProfileSuccess({ user })),
+          map((res: any) => AuthActions.updateProfileSuccess({ user: res.data.user })),
           catchError((err) => of(AuthActions.updateProfileFailure({ error: err.error?.message || 'Update failed' }))),
         ),
       ),

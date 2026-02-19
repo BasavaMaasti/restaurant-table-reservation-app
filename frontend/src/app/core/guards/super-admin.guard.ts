@@ -4,16 +4,23 @@ import { Store } from '@ngrx/store';
 import { map, filter, take } from 'rxjs/operators';
 import { selectCurrentUser } from '../../store/auth/auth.selectors';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const superAdminGuard: CanActivateFn = () => {
+  const store = inject(Store);
   const router = inject(Router);
 
-  // If no token at all, redirect immediately
   const token = localStorage.getItem('accessToken');
   if (!token) {
-    router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } });
+    router.navigate(['/restaurants']);
     return false;
   }
 
-  // Token exists — allow through (interceptor will attach it, API will validate)
-  return true;
+  return store.select(selectCurrentUser).pipe(
+    filter((user) => user !== null),
+    take(1),
+    map((user) => {
+      if (user?.role === 'super_admin') return true;
+      router.navigate(['/admin/dashboard']);
+      return false;
+    }),
+  );
 };

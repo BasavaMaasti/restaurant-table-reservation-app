@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { superAdminGuard } from './core/guards/super-admin.guard';
 import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
@@ -84,6 +85,11 @@ export const routes: Routes = [
       {
         path: 'tables',
         loadComponent: () => import('./features/admin/tables/admin-tables.component').then(m => m.AdminTablesComponent),
+      },
+      {
+        path: 'users',
+        canActivate: [superAdminGuard],
+        loadComponent: () => import('./features/admin/users/admin-users.component').then(m => m.AdminUsersComponent),
       },
     ],
   },

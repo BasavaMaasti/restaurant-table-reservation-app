@@ -24,7 +24,7 @@ export const authReducer = createReducer(
   })),
 
   on(AuthActions.loadCurrentUserFailure, (state) => ({
-    ...state, isLoggedIn: false,
+    ...state, user: null, isLoggedIn: false,
   })),
 
   on(AuthActions.updateProfileSuccess, (state, { user }) => ({
