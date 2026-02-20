@@ -4,7 +4,7 @@ let transporter;
 
 const getTransporter = () => {
   if (!transporter) {
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.EMAIL_PORT) || 587,
       secure: false,
@@ -12,6 +12,10 @@ const getTransporter = () => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        // Do not fail on invalid certificates
+        rejectUnauthorized: false
+      }
     });
   }
   return transporter;
