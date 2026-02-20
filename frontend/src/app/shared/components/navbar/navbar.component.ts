@@ -80,7 +80,7 @@ import { AuthActions } from '../../../store/auth/auth.actions';
           <!-- Guest buttons -->
           <ng-container *ngIf="!(isLoggedIn$ | async)">
             <a routerLink="/auth/login" class="nav-link">Sign In</a>
-            <a routerLink="/auth/register" class="btn-signup">Get Started</a>
+            <a routerLink="/auth/register" class="btn-signup">Sign Up</a>
           </ng-container>
 
           <!-- User Avatar Menu -->
