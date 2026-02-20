@@ -61,3 +61,88 @@ router-outlet + * {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ─────────────────────────────────────────
+   Hero Search Bar — Angular Material 17 fix
+   Targets: app-restaurant-list .search-bar
+───────────────────────────────────────── */
+
+app-restaurant-list {
+
+  /* Switch outline fields in the hero to have a solid white fill
+     so the floating label never fights the green background */
+  /* Search bar */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Text input wrapper */
+.search-wrap {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 10px;
+  padding: 0 16px;
+  height: 52px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.search-icon { color: #999; font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+.hero-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #1a1a1a;
+  background: transparent;
+  font-family: inherit;
+}
+.hero-input::placeholder { color: #aaa; }
+
+/* Select wrapper */
+.select-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  padding: 6px 14px;
+  height: 52px;
+  min-width: 150px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+.select-wrap label {
+  font-size: 0.7rem;
+  color: #888;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+  pointer-events: none;
+}
+.hero-select {
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  appearance: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-bar { flex-direction: column; }
+  .search-wrap, .select-wrap { width: 100%; }
+}
+}

@@ -87,6 +87,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/tables/admin-tables.component').then(m => m.AdminTablesComponent),
       },
       {
+        path: 'restaurants',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/admin/restaurants/admin-restaurants.component').then(m => m.AdminRestaurantsComponent),
+      },
+      {
         path: 'users',
         canActivate: [superAdminGuard],
         loadComponent: () => import('./features/admin/users/admin-users.component').then(m => m.AdminUsersComponent),

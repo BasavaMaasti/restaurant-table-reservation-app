@@ -124,9 +124,13 @@ export class ReservationListComponent implements OnInit {
   reservations$: Observable<Reservation[]>;
   loading$: Observable<boolean>;
   allReservations: Reservation[] = [];
-  today = new Date();
+  today: Date;
 
   constructor(private store: Store) {
+    // Strip time — compare date only so today's bookings show as Upcoming
+    const t = new Date();
+    t.setHours(0, 0, 0, 0);
+    this.today = t;
     this.reservations$ = this.store.select(selectAllReservations);
     this.loading$ = this.store.select(selectReservationsLoading);
   }
@@ -138,9 +142,14 @@ export class ReservationListComponent implements OnInit {
 
   getFiltered(type: 'upcoming' | 'past' | 'cancelled'): Reservation[] {
     return this.allReservations.filter((r) => {
-      const date = new Date(r.reservationDate);
+      // Parse date only — strip time so today's reservations count as upcoming
+      const parts = r.reservationDate?.split('T')[0]?.split('-');
+      const date = parts
+        ? new Date(+parts[0], +parts[1] - 1, +parts[2])
+        : new Date(r.reservationDate);
+
       if (type === 'upcoming') return date >= this.today && r.status !== 'cancelled';
-      if (type === 'past') return (date < this.today || r.status === 'completed') && r.status !== 'cancelled';
+      if (type === 'past') return (date < this.today || r.status === 'completed' || r.status === 'no_show') && r.status !== 'cancelled';
       if (type === 'cancelled') return r.status === 'cancelled';
       return true;
     });

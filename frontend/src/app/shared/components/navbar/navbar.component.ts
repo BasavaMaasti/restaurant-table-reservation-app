@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 import { Observable } from 'rxjs';
 import { User } from '../../../core/models/user.model';
 import { selectCurrentUser, selectIsLoggedIn, selectIsAdmin, selectIsSuperAdmin } from '../../../store/auth/auth.selectors';
@@ -15,140 +16,283 @@ import { AuthActions } from '../../../store/auth/auth.actions';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule],
+  imports: [CommonModule, RouterModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, MatBadgeModule],
   template: `
-    <mat-toolbar class="navbar">
-      <div class="navbar-brand">
-        <a routerLink="/" class="brand-link">
-          <mat-icon>restaurant</mat-icon>
+    <nav class="navbar">
+      <div class="navbar-inner">
+
+        <!-- Brand -->
+        <a routerLink="/" class="brand">
+          <div class="brand-icon">🍽️</div>
           <span class="brand-name">TableBook</span>
         </a>
-      </div>
 
-      <div class="nav-links">
-        <a mat-button routerLink="/restaurants" routerLinkActive="active">
-          <mat-icon>search</mat-icon> Restaurants
-        </a>
-
-        <ng-container *ngIf="isLoggedIn$ | async">
-          <a mat-button routerLink="/reservations" routerLinkActive="active">
-            <mat-icon>event_available</mat-icon> My Reservations
+        <!-- Center Nav (public links) -->
+        <div class="center-nav">
+          <a routerLink="/restaurants" routerLinkActive="nav-active" class="nav-link">
+            <mat-icon>search</mat-icon> Find Restaurants
           </a>
-
-          <ng-container *ngIf="isAdmin$ | async">
-            <a mat-button routerLink="/admin/dashboard" routerLinkActive="active">
-              <mat-icon>dashboard</mat-icon> Dashboard
-            </a>
-            <a mat-button routerLink="/admin/reservations" routerLinkActive="active">
-              <mat-icon>event</mat-icon> Bookings
-            </a>
-            <a mat-button routerLink="/admin/tables" routerLinkActive="active">
-              <mat-icon>table_restaurant</mat-icon> Tables
-            </a>
-            <a mat-button routerLink="/admin/users" routerLinkActive="active"
-              *ngIf="isSuperAdmin$ | async"
-              style="background: rgba(123,31,162,0.15); color: #e1bee7;">
-              <mat-icon>manage_accounts</mat-icon> Users
+          <ng-container *ngIf="isLoggedIn$ | async">
+            <a routerLink="/reservations" routerLinkActive="nav-active" class="nav-link">
+              <mat-icon>calendar_today</mat-icon> My Bookings
             </a>
           </ng-container>
-        </ng-container>
-      </div>
+        </div>
 
-      <div class="nav-actions">
-        <ng-container *ngIf="(isLoggedIn$ | async); else guestButtons">
-          <button mat-icon-button [matMenuTriggerFor]="userMenu">
-            <div class="avatar-circle" [class.super-admin]="isSuperAdmin$ | async">
-              {{ (currentUser$ | async)?.name?.charAt(0)?.toUpperCase() }}
-            </div>
-          </button>
-          <mat-menu #userMenu="matMenu">
-            <div class="user-menu-header" mat-menu-item disabled>
-              <strong>{{ (currentUser$ | async)?.name }}</strong>
-              <small>{{ (currentUser$ | async)?.email }}</small>
-              <span class="menu-role" [class]="'role-' + (currentUser$ | async)?.role">
-                {{ (currentUser$ | async)?.role | titlecase }}
-              </span>
-            </div>
-            <mat-divider></mat-divider>
-            <a mat-menu-item routerLink="/profile">
-              <mat-icon>person</mat-icon> My Profile
-            </a>
-            <a mat-menu-item routerLink="/reservations">
-              <mat-icon>calendar_today</mat-icon> My Reservations
-            </a>
-            <mat-divider *ngIf="isAdmin$ | async"></mat-divider>
-            <ng-container *ngIf="isAdmin$ | async">
+        <!-- Right Side -->
+        <div class="right-nav">
+
+          <!-- Admin Menu Button (only for admin/super admin) -->
+          <ng-container *ngIf="isAdmin$ | async">
+            <button class="admin-pill" [matMenuTriggerFor]="adminMenu">
+              <mat-icon>admin_panel_settings</mat-icon>
+              Admin Panel
+              <mat-icon class="chevron">expand_more</mat-icon>
+            </button>
+
+            <mat-menu #adminMenu="matMenu" class="admin-dropdown">
               <a mat-menu-item routerLink="/admin/dashboard">
-                <mat-icon>dashboard</mat-icon> Admin Dashboard
+                <mat-icon>dashboard</mat-icon>
+                <span>Dashboard</span>
+              </a>
+              <a mat-menu-item routerLink="/admin/restaurants">
+                <mat-icon>store</mat-icon>
+                <span>Restaurants</span>
               </a>
               <a mat-menu-item routerLink="/admin/reservations">
-                <mat-icon>event</mat-icon> Manage Bookings
+                <mat-icon>event_note</mat-icon>
+                <span>Bookings</span>
               </a>
               <a mat-menu-item routerLink="/admin/tables">
-                <mat-icon>table_restaurant</mat-icon> Manage Tables
+                <mat-icon>table_restaurant</mat-icon>
+                <span>Tables</span>
               </a>
-              <a mat-menu-item routerLink="/admin/users" *ngIf="isSuperAdmin$ | async" class="super-item">
-                <mat-icon>manage_accounts</mat-icon> Manage Users
-              </a>
-            </ng-container>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()" class="logout-btn">
-              <mat-icon>logout</mat-icon> Logout
-            </button>
-          </mat-menu>
-        </ng-container>
+              <ng-container *ngIf="isSuperAdmin$ | async">
+                <mat-divider></mat-divider>
+                <a mat-menu-item routerLink="/admin/users" class="super-item">
+                  <mat-icon>manage_accounts</mat-icon>
+                  <span>User Management</span>
+                </a>
+              </ng-container>
+            </mat-menu>
+          </ng-container>
 
-        <ng-template #guestButtons>
-          <a mat-button routerLink="/auth/login">Login</a>
-          <a mat-raised-button color="primary" routerLink="/auth/register">Sign Up</a>
-        </ng-template>
+          <!-- Guest buttons -->
+          <ng-container *ngIf="!(isLoggedIn$ | async)">
+            <a routerLink="/auth/login" class="nav-link">Sign In</a>
+            <a routerLink="/auth/register" class="btn-signup">Get Started</a>
+          </ng-container>
+
+          <!-- User Avatar Menu -->
+          <ng-container *ngIf="isLoggedIn$ | async">
+            <button class="avatar-btn" [matMenuTriggerFor]="userMenu">
+              <div class="avatar" [class.avatar-admin]="isAdmin$ | async" [class.avatar-super]="isSuperAdmin$ | async">
+                {{ (currentUser$ | async)?.name?.charAt(0)?.toUpperCase() }}
+              </div>
+              <div class="avatar-info">
+                <span class="avatar-name">{{ (currentUser$ | async)?.name?.split(' ')?.[0] }}</span>
+                <span class="avatar-role">{{ getRoleLabel((currentUser$ | async)?.role) }}</span>
+              </div>
+              <mat-icon class="chevron-small">expand_more</mat-icon>
+            </button>
+
+            <mat-menu #userMenu="matMenu">
+              <div class="menu-user-header" mat-menu-item disabled>
+                <div class="menu-avatar" [class.avatar-admin]="isAdmin$ | async" [class.avatar-super]="isSuperAdmin$ | async">
+                  {{ (currentUser$ | async)?.name?.charAt(0)?.toUpperCase() }}
+                </div>
+                <div>
+                  <strong>{{ (currentUser$ | async)?.name }}</strong>
+                  <small>{{ (currentUser$ | async)?.email }}</small>
+                </div>
+              </div>
+              <mat-divider></mat-divider>
+              <a mat-menu-item routerLink="/profile">
+                <mat-icon>person_outline</mat-icon> My Profile
+              </a>
+              <a mat-menu-item routerLink="/reservations">
+                <mat-icon>calendar_today</mat-icon> My Bookings
+              </a>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="logout()" class="logout-item">
+                <mat-icon>logout</mat-icon> Sign Out
+              </button>
+            </mat-menu>
+          </ng-container>
+
+        </div>
       </div>
-    </mat-toolbar>
+    </nav>
   `,
   styles: [`
     .navbar {
       background: #1B4332;
-      color: white;
-      padding: 0 24px;
+      height: 64px;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      justify-content: space-between;
-      height: 64px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.25);
     }
-    .navbar-brand { display: flex; align-items: center; flex-shrink: 0; }
-    .brand-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: white; }
-    .brand-name { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; }
-    .nav-links { display: flex; gap: 2px; overflow-x: auto; }
-    .nav-links a { color: rgba(255,255,255,0.85); font-size: 0.88rem; padding: 0 10px; flex-shrink: 0; }
-    .nav-links a.active, .nav-links a:hover { color: white; background: rgba(255,255,255,0.12) !important; border-radius: 4px; }
-    .nav-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-    .avatar-circle {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: #40916C; color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.9rem;
+    .navbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 24px;
     }
-    .avatar-circle.super-admin { background: #7b1fa2; }
-    .user-menu-header { display: flex; flex-direction: column; padding: 12px 16px !important; cursor: default; }
-    .user-menu-header strong { font-size: 0.95rem; }
-    .user-menu-header small { color: #666; font-size: 0.8rem; margin-top: 2px; }
-    .menu-role { font-size: 0.75rem; font-weight: 700; margin-top: 4px; padding: 2px 8px; border-radius: 10px; width: fit-content; }
-    .role-customer { background: #e8f5e9; color: #2e7d32; }
-    .role-admin { background: #e3f2fd; color: #1565c0; }
-    .role-super_admin { background: #f3e5f5; color: #7b1fa2; }
-    .logout-btn { color: #c62828 !important; }
-    .super-item { color: #7b1fa2; }
-    .super-item mat-icon { color: #7b1fa2; }
 
-    @media (max-width: 1100px) {
-      .nav-links a span { display: none; }
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
     }
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
+    .brand-icon { font-size: 1.6rem; line-height: 1; }
+    .brand-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.3px;
     }
-  `],
+
+    /* Center Nav */
+    .center-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-link mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    .nav-link:hover { color: white; background: rgba(255,255,255,0.1); text-decoration: none; }
+    .nav-active { color: white !important; background: rgba(255,255,255,0.15) !important; }
+
+    /* Right Nav */
+    .right-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Admin Pill */
+    .admin-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .admin-pill:hover { background: rgba(255,255,255,0.2); }
+    .admin-pill mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    .chevron { font-size: 18px !important; width: 18px !important; height: 18px !important; }
+
+    /* Signup button */
+    .btn-signup {
+      background: white;
+      color: #1B4332;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-signup:hover { background: #f0fdf4; transform: translateY(-1px); text-decoration: none; }
+
+    /* Avatar Button */
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 24px;
+      padding: 5px 12px 5px 5px;
+      cursor: pointer;
+      color: white;
+      transition: all 0.15s;
+    }
+    .avatar-btn:hover { background: rgba(255,255,255,0.16); }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #40916C;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .avatar-admin { background: #1565c0; }
+    .avatar-super { background: #7b1fa2; }
+    .avatar-info { display: flex; flex-direction: column; line-height: 1.2; }
+    .avatar-name { font-size: 0.85rem; font-weight: 600; color: white; }
+    .avatar-role { font-size: 0.7rem; color: rgba(255,255,255,0.6); }
+    .chevron-small { font-size: 16px !important; width: 16px !important; height: 16px !important; color: rgba(255,255,255,0.6); }
+
+    /* Dropdown user header */
+    .menu-user-header {
+      display: flex !important;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px !important;
+    }
+    .menu-user-header strong { display: block; font-size: 0.9rem; }
+    .menu-user-header small { display: block; color: #888; font-size: 0.78rem; }
+    .menu-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #40916C;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .logout-item { color: #c62828 !important; }
+    .logout-item mat-icon { color: #c62828 !important; }
+    .super-item mat-icon { color: #7b1fa2 !important; }
+    .super-item span { color: #7b1fa2 !important; }
+
+    @media (max-width: 900px) {
+      .avatar-info { display: none; }
+      .admin-pill span { display: none; }
+    }
+    @media (max-width: 640px) {
+      .center-nav .nav-link span { display: none; }
+      .brand-name { font-size: 1.1rem; }
+    }
+  `]
 })
 export class NavbarComponent {
   currentUser$: Observable<User | null>;
@@ -161,6 +305,15 @@ export class NavbarComponent {
     this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
     this.isAdmin$ = this.store.select(selectIsAdmin);
     this.isSuperAdmin$ = this.store.select(selectIsSuperAdmin);
+  }
+
+  getRoleLabel(role?: string): string {
+    const labels: Record<string, string> = {
+      customer: 'Customer',
+      admin: 'Admin',
+      super_admin: 'Super Admin',
+    };
+    return role ? labels[role] || '' : '';
   }
 
   logout() {
